@@ -1,0 +1,143 @@
+import java.util.*;
+import java.io.*;
+class optimal 
+{
+    static boolean search(int key, int[] fr)
+    {
+        for (int i = 0; i < fr.length; i++)
+            if (fr[i] == key)
+                return true;
+        return false;
+    }
+
+    static int predict(int[] pg, int[] fr, int pn,
+                       int index)
+    {
+        int res = -1, farthest = index;
+        for (int i = 0; i < fr.length; i++) {
+            int j;
+            for (j = index; j < pn; j++) {
+                if (fr[i] == pg[j]) {
+                    if (j > farthest) {
+                        farthest = j;
+                        res = i;
+                    }
+                    break;
+                }
+            }
+            if (j == pn)
+                return i;
+        }
+        return (res == -1) ? 0 : res;
+    }
+    void optimalPage(int pg[], int pn, int fn)
+    {
+        int[] fr = new int[fn];
+        int hit = 0;
+        int index = 0;
+        for (int i = 0; i < pn; i++) {
+            if (search(pg[i], fr)) {
+                hit++;
+                continue;
+            }
+            if (index < fn)
+                fr[index++] = pg[i];
+            else {
+                int j = predict(pg, fr, pn, i + 1);
+                fr[j] = pg[i];
+            }
+        }
+        System.out.println("No. of faults = " + hit);
+        System.out.println("No. of misses = " + (pn - hit));
+    }
+}
+class FIFO
+{
+    void fifo(int pages[], int n, int frames) {
+        HashSet<Integer> s = new HashSet<>(frames);
+        Queue queue = new LinkedList<>();
+        int pagefault = 0;
+        for (int i = 0; i < n; i++) {
+            if (s.size() < frames) {
+                if (!s.contains(pages[i])) {
+                    s.add(pages[i]);
+                    pagefault++;
+                    queue.add(pages[i]);
+
+                }
+            } else {
+                if (!s.contains(pages[i])) {
+                    int val = (int) queue.peek();
+                    queue.poll();
+                    s.remove(val);
+                    s.add(pages[i]);
+                    queue.add(pages[i]);
+                    pagefault++;
+                }
+            }
+
+        }
+        System.out.println("PageFault :" + pagefault);
+        System.out.println("PageHits :" + (n - pagefault));
+
+    }
+
+    public static boolean search(int key, int frames[]) {
+        for (int i = 0; i < frames.length; i++) {
+            if (frames[i] == key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int predict(int pages[], int frames[], int n, int index) {
+        int res = -1, farthest = index;
+        for (int i = 0; i < frames.length; i++) {
+            int j;
+            for (j = index; j < n; j++) {
+                if (frames[i] == pages[j]) {
+                    if (j > farthest) {
+                        farthest = j;
+                        res = i;
+                    }
+                    break;
+                }
+            }
+            if (j == n)
+                return i;
+        }
+        return (res == -1) ? 0 : res;
+    }
+}
+public class FIFO_Optimal {
+    public static void main(String[] args) {
+        Scanner s=new Scanner(System.in);
+        int pn,fn;
+        System.out.println("Enter number of pages : ");
+        pn=s.nextInt();
+        System.out.println("Enter number of frames : ");
+        fn=s.nextInt();
+        int pg[]=new int[pn];
+        System.out.println("Enter reference string : ");
+        for(int i=0;i<pn;i++)
+        {
+            pg[i]=s.nextInt();
+        }
+        System.out.println(" \n1.Optimal \n2.FIFO \nEnter your choice");
+        int ch = s.nextInt();
+        
+        switch (ch) {
+            case 1:
+                
+                new optimal().optimalPage(pg,pn,fn);
+                break;
+            case 2:
+                new FIFO().fifo(pg,pn,fn);
+                break;
+            default:
+                System.out.println("Wrong choice");
+        }
+        s.close();
+    }
+}
